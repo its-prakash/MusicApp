@@ -1,5 +1,4 @@
 
-
 CREATE TABLE users (
                        id BIGSERIAL PRIMARY KEY,
                        userName VARCHAR(255) UNIQUE NOT NULL,
