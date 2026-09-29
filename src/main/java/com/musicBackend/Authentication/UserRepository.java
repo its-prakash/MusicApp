@@ -1,11 +1,10 @@
-package com.musicBackend.repository;
+package com.musicBackend.Authentication;
 
-import com.musicBackend.entity.User;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
 public interface UserRepository extends ReactiveCrudRepository<User, Long> {
-    Mono<User> findByUserName(String userName);
+    Mono<User> findByEmailOrUserName(String email, String userName);
 }

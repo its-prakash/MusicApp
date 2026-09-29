@@ -1,4 +1,4 @@
-package com.musicBackend.entity;
+package com.musicBackend.Authentication;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +21,11 @@ public class User {
     @Column("userName")
     private String userName;
 
+    @Column("email")
+    private String email;
+
     private String password;
     private String role;
-
-    // getters and setters
 
 
 
