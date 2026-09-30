@@ -1,8 +1,5 @@
-package com.musicBackend.controller;
+package com.musicBackend.Authentication;
 
-import com.musicBackend.dtos.AuthRequest;
-import com.musicBackend.dtos.AuthResponse;
-import com.musicBackend.services.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

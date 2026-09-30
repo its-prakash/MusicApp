@@ -1,4 +1,4 @@
-package com.musicBackend.util;
+package com.musicBackend.Authentication;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

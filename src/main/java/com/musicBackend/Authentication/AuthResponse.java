@@ -1,4 +1,4 @@
-package com.musicBackend.dtos;
+package com.musicBackend.Authentication;
 
 public class AuthResponse {
 
