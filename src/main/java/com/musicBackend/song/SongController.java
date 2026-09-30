@@ -17,37 +17,17 @@ public class SongController {
 
     private final SongService songService;
 
-    @PostMapping(
-            value = "/upload",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
+    @PostMapping(value = "/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<String> uploadFile(@RequestPart("file") FilePart file) {
+        return songService.uploadFile(file)
+                .doOnSuccess(url -> System.out.println("Upload success: " + url))
+                .doOnError(e -> System.out.println("Upload error: " + e.getMessage()));
+    }
+
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Song> createSong(
-
-            @RequestPart("title") String title,
-
-            @RequestPart("artist") String artist,
-
-            @RequestPart("album") String album,
-
-            @RequestPart("genre") String genre,
-
-            @RequestPart("duration") Integer duration,
-
-            @RequestPart("audio") FilePart audio,
-
-            @RequestPart("cover") FilePart cover
-    ) {
-
-        Song song = new Song();
-
-        song.setTitle(title);
-        song.setArtist(artist);
-        song.setAlbum(album);
-        song.setGenre(genre);
-        song.setDuration(duration);
-
-        return songService.createSong(song, audio, cover);
+    public Mono<Song> createSong(@RequestBody Song song) {
+        return songService.createSong(song);
     }
 
     @GetMapping

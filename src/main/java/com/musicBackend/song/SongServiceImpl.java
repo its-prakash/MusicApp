@@ -9,31 +9,19 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class SongServiceImpl implements SongService{
+public class SongServiceImpl implements SongService {
 
     private final SongRepository songRepository;
     private final UploadcareService uploadcareService;
 
+    @Override
+    public Mono<Song> createSong(Song song) {
+        return songRepository.save(song);
+    }
 
     @Override
-    public Mono<Song> createSong(
-            Song song,
-            FilePart audio,
-            FilePart cover
-    ) {
-
-        return uploadcareService.uploadFile(audio)
-                .flatMap(audioUrl ->
-                        uploadcareService.uploadFile(cover)
-                                .map(coverUrl -> {
-
-                                    song.setAudioUrl(audioUrl);
-                                    song.setCoverImageUrl(coverUrl);
-
-                                    return song;
-                                })
-                )
-                .flatMap(songRepository::save);
+    public Mono<String> uploadFile(FilePart file) {
+        return uploadcareService.uploadFile(file);
     }
 
     @Override
