@@ -1,5 +1,7 @@
 package com.musicBackend.Authentication;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,5 +49,30 @@ public class JwtUtils {
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    // Extract Username from Token
+    public String getUsernameFromToken(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    // Validate Token (Checks signature and expiration)
+    public boolean validateToken(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return claims.getExpiration().after(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            // Token signature invalid, expired, or malformed
+            return false;
+        }
+    }
+
+    // Helper method to parse token claims (JJWT 0.12.x syntax)
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
