@@ -4,6 +4,8 @@ package com.musicBackend.song;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,10 +17,37 @@ public class SongController {
 
     private final SongService songService;
 
-    @PostMapping
+    @PostMapping(
+            value = "/upload",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Song> creatSong(@RequestBody Song song) {
-        return songService.createSong(song);
+    public Mono<Song> createSong(
+
+            @RequestPart("title") String title,
+
+            @RequestPart("artist") String artist,
+
+            @RequestPart("album") String album,
+
+            @RequestPart("genre") String genre,
+
+            @RequestPart("duration") Integer duration,
+
+            @RequestPart("audio") FilePart audio,
+
+            @RequestPart("cover") FilePart cover
+    ) {
+
+        Song song = new Song();
+
+        song.setTitle(title);
+        song.setArtist(artist);
+        song.setAlbum(album);
+        song.setGenre(genre);
+        song.setDuration(duration);
+
+        return songService.createSong(song, audio, cover);
     }
 
     @GetMapping

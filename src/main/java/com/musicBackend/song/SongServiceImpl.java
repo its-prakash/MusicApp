@@ -2,6 +2,7 @@ package com.musicBackend.song;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -11,9 +12,28 @@ import reactor.core.publisher.Mono;
 public class SongServiceImpl implements SongService{
 
     private final SongRepository songRepository;
+    private final UploadcareService uploadcareService;
+
+
     @Override
-    public Mono<Song> createSong(Song song) {
-        return songRepository.save(song);
+    public Mono<Song> createSong(
+            Song song,
+            FilePart audio,
+            FilePart cover
+    ) {
+
+        return uploadcareService.uploadFile(audio)
+                .flatMap(audioUrl ->
+                        uploadcareService.uploadFile(cover)
+                                .map(coverUrl -> {
+
+                                    song.setAudioUrl(audioUrl);
+                                    song.setCoverImageUrl(coverUrl);
+
+                                    return song;
+                                })
+                )
+                .flatMap(songRepository::save);
     }
 
     @Override
