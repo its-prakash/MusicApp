@@ -1,11 +1,9 @@
 package com.musicBackend.Authentication;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -19,7 +17,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public Mono<ResponseEntity<AuthResponse>> signup(@RequestBody AuthRequest authRequest) {
+    public Mono<ResponseEntity<AuthResponse>> signup(@Valid @RequestBody AuthRequest authRequest) {
         return authService.signup(authRequest)
                 .map(response -> ResponseEntity.status(HttpStatus.CREATED).body(response));
     }
@@ -29,4 +27,11 @@ public class AuthController {
         return authService.login(authRequest)
                 .map(response -> ResponseEntity.ok(response));
     }
+
+    @PostMapping("logout")
+    public Mono<ResponseEntity<String>> logout(@RequestHeader("Authorization") String authHeader){
+        return authService.logout(authHeader)
+                .map(message -> ResponseEntity.ok(message));
+    }
+
 }

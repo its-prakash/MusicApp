@@ -12,7 +12,10 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class JwtAuthenticationFilter implements WebFilter {
@@ -29,7 +32,6 @@ public class JwtAuthenticationFilter implements WebFilter {
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
 
-        // Check if Authorization header contains a Bearer token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
 
@@ -47,7 +49,6 @@ public class JwtAuthenticationFilter implements WebFilter {
             }
         }
 
-        // If no token or invalid, pass request along (SecurityConfig will reject unauthenticated endpoints)
         return chain.filter(exchange);
     }
 }

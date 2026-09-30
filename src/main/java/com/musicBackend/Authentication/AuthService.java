@@ -10,11 +10,13 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils, TokenBlacklistService tokenBlacklistService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     public Mono<AuthResponse> signup(AuthRequest authRequest) {
@@ -55,12 +57,28 @@ public class AuthService {
         return userRepository.findByEmailOrUserName(identifier, identifier)
                 .switchIfEmpty(Mono.error(new RuntimeException("Invalid username, email, or password")))
                 .flatMap(user -> {
+
+                    if (tokenBlacklistService.hasActiveSession(user.getUserName())) {
+                        return Mono.error(new RuntimeException("User is already logged in. Please log out first."));
+                    }
+
                     if (!passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
                         return Mono.error(new RuntimeException("Invalid username, email, or password"));
                     }
 
                     String token = jwtUtils.generateToken(user.getUserName());
+                    tokenBlacklistService.registerActiveSession(user.getUserName(), token);
                     return Mono.just(new AuthResponse(token, user.getUserName()));
                 });
+    }
+
+    public Mono<String> logout(String authHeader){
+        if(authHeader !=null && authHeader.startsWith("Bearer ")){
+            String token = authHeader.substring(7);
+
+            tokenBlacklistService.blacklistToken(token);
+            return Mono.just("Logged out successfully");
+        }
+        return Mono.error(new RuntimeException("Invalid Authorization header"));
     }
 }

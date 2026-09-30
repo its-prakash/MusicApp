@@ -20,6 +20,12 @@ public class JwtUtils {
     @Value("${jwt.expiration}")
     private Long EXPIRATION_TIME;
 
+    private TokenBlacklistService tokenBlacklistService;
+
+    public JwtUtils(TokenBlacklistService tokenBlacklistService) {
+        this.tokenBlacklistService = tokenBlacklistService;
+    }
+
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
@@ -40,6 +46,11 @@ public class JwtUtils {
 
     // Validate Token (Checks signature and expiration)
     public boolean validateToken(String token) {
+
+        if (tokenBlacklistService.isTokenBlackListed(token)){
+            return false;
+        }
+
         try {
             Claims claims = getClaims(token);
             return claims.getExpiration().after(new Date());
