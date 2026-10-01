@@ -12,23 +12,19 @@ import java.util.Objects;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 1. Handle custom business runtime exceptions (e.g., duplicate user, invalid credentials)
     @ExceptionHandler(RuntimeException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleRuntimeException(RuntimeException ex) {
         ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error));
     }
 
-    // 2. Handle DTO validation failures (@Valid annotations in request bodies)
     @ExceptionHandler(WebExchangeBindException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleValidationException(WebExchangeBindException ex) {
-        // Extract the first validation message (e.g., "Email is required")
         String errorMessage = Objects.requireNonNull(ex.getFieldError()).getDefaultMessage();
         ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error));
     }
 
-    // 3. Fallback handler for unhandled server errors
     @ExceptionHandler(Exception.class)
     public Mono<ResponseEntity<ErrorResponse>> handleGeneralException(Exception ex) {
         ErrorResponse error = new ErrorResponse(
@@ -40,7 +36,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleInvalidCredentials(InvalidCredentialsException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                ex.getMessage()
+        );
         return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error));
     }
 }
