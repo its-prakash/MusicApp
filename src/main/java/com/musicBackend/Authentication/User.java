@@ -9,11 +9,18 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import org.springframework.data.relational.core.mapping.Column;
 
+
 @Setter
 @Getter
 @NoArgsConstructor
 @Table("users")
 public class User {
+
+    public enum Role {
+        ROLE_USER,
+        ROLE_ARTIST,
+        ROLE_ADMIN
+    }
 
     @Id
     private Long id;

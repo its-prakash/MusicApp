@@ -15,6 +15,8 @@ public class AuthRequest {
     @NotBlank(message = "Password is required")
     private String password;
 
+    private User.Role role;
+
     public String getUserName() {
         return userName;
     }
@@ -37,5 +39,13 @@ public class AuthRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public User.Role getRole() {
+        return role;
+    }
+
+    public void setRole(User.Role role) {
+        this.role = role;
     }
 }

@@ -34,12 +34,14 @@ public class AuthService {
                     newUser.setUserName(authRequest.getUserName());
                     newUser.setEmail(authRequest.getEmail());
                     newUser.setPassword(passwordEncoder.encode(authRequest.getPassword()));
-                    newUser.setRole("ROLE_USER");
+
+                    User.Role assignedRole = (authRequest.getRole() != null)?authRequest.getRole() : User.Role.ROLE_USER;
+                    newUser.setRole(assignedRole.name());
                     return userRepository.save(newUser);
                 }))
                 .map(savedUser -> {
                     String token = jwtUtils.generateToken(savedUser.getUserName());
-                    return new AuthResponse(token, savedUser.getUserName());
+                    return new AuthResponse(token, savedUser.getUserName(), savedUser.getRole());
                 });
     }
 
@@ -68,7 +70,7 @@ public class AuthService {
 
                     String token = jwtUtils.generateToken(user.getUserName());
                     tokenBlacklistService.registerActiveSession(user.getUserName(), token);
-                    return Mono.just(new AuthResponse(token, user.getUserName()));
+                    return Mono.just(new AuthResponse(token, user.getUserName(), user.getRole()));
                 });
     }
 
