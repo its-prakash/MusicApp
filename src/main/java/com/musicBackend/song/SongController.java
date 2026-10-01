@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/songs")
-@CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class SongController {
 

@@ -75,8 +75,13 @@ public class AuthService {
     public Mono<String> logout(String authHeader){
         if(authHeader !=null && authHeader.startsWith("Bearer ")){
             String token = authHeader.substring(7);
+            if(!jwtUtils.validateToken(token)){
+                return Mono.error(new RuntimeException("Invalid or expired token"));
+            }
 
-            tokenBlacklistService.blacklistToken(token);
+            String userName = jwtUtils.getUsernameFromToken(token);
+
+            tokenBlacklistService.removeAccountSession(userName, token);
             return Mono.just("Logged out successfully");
         }
         return Mono.error(new RuntimeException("Invalid Authorization header"));

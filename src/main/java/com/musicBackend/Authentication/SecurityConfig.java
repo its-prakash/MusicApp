@@ -43,19 +43,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // 1. Allow standard Angular dev server port (and production origin if needed)
         config.setAllowedOrigins(List.of("http://localhost:4200","http://localhost:54210", " http://localhost:57182/"));
-
-        // 2. Allow standard HTTP methods used by Angular HttpClient
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-
-        // 3. Allow headers Angular sends (including Authorization header for JWT)
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With"));
-
-        // 4. Expose response headers so Angular can read them if necessary
         config.setExposedHeaders(List.of("Authorization"));
-
-        // 5. Allow credentials (cookies / auth headers across origins)
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
