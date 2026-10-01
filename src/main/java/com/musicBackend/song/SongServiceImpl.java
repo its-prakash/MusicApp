@@ -2,7 +2,6 @@ package com.musicBackend.song;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,16 +11,10 @@ import reactor.core.publisher.Mono;
 public class SongServiceImpl implements SongService {
 
     private final SongRepository songRepository;
-    private final UploadcareService uploadcareService;
 
     @Override
     public Mono<Song> createSong(Song song) {
         return songRepository.save(song);
-    }
-
-    @Override
-    public Mono<String> uploadFile(FilePart file) {
-        return uploadcareService.uploadFile(file);
     }
 
     @Override
